@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeCreativity — Pré-Inscrição Preparatório Universitário</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+  :root {
+    --azul: #1B2A4A;
+    --azul-medio: #243660;
+    --dourado: #F5A623;
+    --dourado-escuro: #D4891A;
+    --branco: #FFFFFF;
+    --cinzento: #F4F5F7;
+    --cinzento-borda: #E2E4E9;
+    --texto: #1A1D23;
+    --texto-suave: #5A6070;
+    --erro: #D94040;
+    --sucesso: #1DB954;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cinzento);
+    color: var(--texto);
+    overflow-x: hidden;
+  }
+
+  /* ───── NAV ───── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(27, 42, 74, 0.97);
+    backdrop-filter: blur(8px);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+    border-bottom: 1px solid rgba(245,166,35,0.2);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--branco);
+    letter-spacing: -0.3px;
+  }
+  .nav-logo span { color: var(--dourado); }
+
+  .nav-links {
+    display: flex; gap: 24px; list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--dourado); }
+
+  .nav-cta {
+    background: var(--dourado);
+    color: var(--azul) !important;
+    font-weight: 700 !important;
+    padding: 8px 18px;
+    border-radius: 6px;
+  }
+
+  /* ───── HERO ───── */
+  #hero {
+    background: var(--azul);
+    min-height: 100vh;
+    padding: 100px 24px 60px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(245,166,35,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,166,35,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(245,166,35,0.12);
+    border: 1px solid rgba(245,166,35,0.3);
+    color: var(--dourado);
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 7px 16px; border-radius: 100px;
+    margin-bottom: 28px; position: relative;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: var(--sucesso);
+    border-radius: 50%;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero-titulo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 3.6rem);
+    color: var(--branco);
+    line-height: 1.08;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .hero-titulo span { color: var(--dourado); }
+
+  .hero-edicao {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    color: rgba(255,255,255,0.45);
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 500px;
+    line-height: 1.65;
+    margin-bottom: 40px;
+  }
+
+  /* CONTADOR DE VAGAS */
+  .vagas-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(245,166,35,0.25);
+    border-radius: 16px;
+    padding: 24px 40px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .vagas-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 4px;
+  }
+  .vagas-numero {
+    font-family: 'Syne', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--dourado);
+    line-height: 1;
+    transition: all 0.3s;
+  }
+  .vagas-subtexto {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+  }
+
+  .hero-btns {
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+  }
+
+  .btn-primario {
+    background: var(--dourado);
+    color: var(--azul);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 16px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+    transition: background 0.2s, transform 0.15s;
+    border: none; cursor: pointer;
+  }
+  .btn-primario:hover { background: var(--dourado-escuro); transform: translateY(-1px); }
+
+  .btn-secundario {
+    background: transparent;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 16px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secundario:hover { border-color: rgba(255,255,255,0.5); color: var(--branco); }
+
+  /* ───── SECÇÕES GERAIS ───── */
+  section { padding: 72px 24px; }
+
+  .container { max-width: 760px; margin: 0 auto; }
+  .container-lg { max-width: 960px; margin: 0 auto; }
+
+  .secao-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--dourado-escuro);
+    margin-bottom: 8px;
+  }
+
+  .secao-titulo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    color: var(--azul);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .secao-subtitulo {
+    font-size: 1rem;
+    color: var(--texto-suave);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 540px;
+  }
+
+  /* ───── CURSOS ───── */
+  #cursos { background: var(--branco); }
+
+  .cursos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .curso-card {
+    border: 1.5px solid var(--cinzento-borda);
+    border-radius: 12px;
+    padding: 20px;
+    background: var(--cinzento);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .curso-card:hover {
+    border-color: var(--dourado);
+    box-shadow: 0 4px 20px rgba(245,166,35,0.12);
+  }
+
+  .curso-card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .curso-inst {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--azul);
+    line-height: 1.3;
+  }
+
+  .curso-preco {
+    background: var(--azul);
+    color: var(--dourado);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+
+  .curso-lista {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .curso-lista li {
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+    padding-left: 14px;
+    position: relative;
+  }
+  .curso-lista li::before {
+    content: '›';
+    position: absolute; left: 0;
+    color: var(--dourado);
+    font-weight: 700;
+  }
+
+  /* ───── PAGAMENTO ───── */
+  #pagamento { background: var(--cinzento); }
+
+  .pagamento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .pag-card {
+    background: var(--branco);
+    border: 1.5px solid var(--cinzento-borda);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .pag-icon {
+    width: 44px; height: 44px;
+    background: var(--azul);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    font-size: 1.3rem;
+  }
+
+  .pag-titulo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--azul);
+    margin-bottom: 6px;
+  }
+
+  .pag-desc {
+    font-size: 0.83rem;
+    color: var(--texto-suave);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .pag-numero {
+    background: var(--cinzento);
+    border: 1px solid var(--cinzento-borda);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'DM Sans', monospace;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--azul);
+    word-break: break-all;
+    letter-spacing: 0.5px;
+  }
+
+  .pag-valor {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+  }
+  .pag-valor strong { color: var(--azul); }
+
+  /* ───── FORMULÁRIO ───── */
+  #formulario { background: var(--branco); }
+
+  .form-wrapper {
+    background: var(--cinzento);
+    border: 1.5px solid var(--cinzento-borda);
+    border-radius: 16px;
+    padding: 40px;
+  }
+
+  .form-grupo { margin-bottom: 22px; }
+
+  .form-grupo label {
+    display: block;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--azul);
+    margin-bottom: 7px;
+  }
+
+  .form-grupo label .obrigatorio {
+    color: var(--erro);
+    margin-left: 3px;
+  }
+
+  .form-grupo input,
+  .form-grupo select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--cinzento-borda);
+    border-radius: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--texto);
+    background: var(--branco);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .form-grupo input:focus,
+  .form-grupo select:focus {
+    outline: none;
+    border-color: var(--dourado);
+    box-shadow: 0 0 0 3px rgba(245,166,35,0.12);
+  }
+
+  .form-grupo input.erro,
+  .form-grupo select.erro {
+    border-color: var(--erro);
+    box-shadow: 0 0 0 3px rgba(217,64,64,0.08);
+  }
+
+  .form-erro-msg {
+    font-size: 0.78rem;
+    color: var(--erro);
+    margin-top: 5px;
+    display: none;
+  }
+  .form-erro-msg.visivel { display: block; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-separador {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+    margin: 32px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--cinzento-borda);
+  }
+
+  /* Upload */
+  .upload-area {
+    border: 2px dashed var(--cinzento-borda);
+    border-radius: 10px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--branco);
+    position: relative;
+  }
+  .upload-area:hover { border-color: var(--dourado); background: rgba(245,166,35,0.03); }
+  .upload-area.tem-ficheiro { border-color: var(--sucesso); background: rgba(29,185,84,0.03); }
+  .upload-area input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icone { font-size: 2rem; margin-bottom: 8px; }
+  .upload-texto { font-size: 0.88rem; color: var(--texto-suave); }
+  .upload-texto strong { color: var(--azul); }
+  .upload-preview {
+    display: none; margin-top: 16px;
+    align-items: center; gap: 12px;
+    background: var(--cinzento);
+    border-radius: 8px; padding: 10px 14px;
+    text-align: left;
+  }
+  .upload-preview.visivel { display: flex; }
+  .upload-preview-nome { font-size: 0.83rem; font-weight: 600; color: var(--azul); }
+  .upload-preview-tamanho { font-size: 0.75rem; color: var(--texto-suave); }
+
+  /* Botão submit */
+  .btn-submit {
+    width: 100%;
+    background: var(--azul);
+    color: var(--branco);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    letter-spacing: 0.3px;
+  }
+  .btn-submit:hover:not(:disabled) { background: var(--azul-medio); transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: var(--branco);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ───── MODAL DE SUCESSO ───── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,15,30,0.8);
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.visivel { display: flex; }
+
+  .modal-box {
+    background: var(--branco);
+    border-radius: 20px;
+    padding: 48px 40px;
+    max-width: 480px; width: 100%;
+    text-align: center;
+    animation: modal-entrada 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes modal-entrada {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-check {
+    width: 72px; height: 72px;
+    background: var(--sucesso);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 2rem;
+    animation: check-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  }
+  @keyframes check-pop {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+
+  .modal-titulo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--azul);
+    margin-bottom: 10px;
+  }
+
+  .modal-numero {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--dourado);
+    background: var(--azul);
+    display: inline-block;
+    padding: 8px 24px;
+    border-radius: 8px;
+    margin: 16px 0;
+    letter-spacing: 2px;
+  }
+
+  .modal-desc {
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .modal-btns { display: flex; flex-direction: column; gap: 10px; }
+
+  .modal-btn-pdf {
+    background: var(--dourado);
+    color: var(--azul);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 14px;
+    border: none; border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .modal-btn-pdf:hover { background: var(--dourado-escuro); }
+
+  .modal-btn-fechar {
+    background: var(--cinzento);
+    color: var(--texto-suave);
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 12px;
+    border: none; border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .modal-btn-fechar:hover { background: var(--cinzento-borda); }
+
+  /* ───── CONTACTOS ───── */
+  #contactos { background: var(--azul); }
+  #contactos .secao-titulo { color: var(--branco); }
+  #contactos .secao-subtitulo { color: rgba(255,255,255,0.55); }
+
+  .contactos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .contacto-item {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .contacto-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--dourado);
+    margin-bottom: 6px;
+  }
+
+  .contacto-valor {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--branco);
+  }
+
+  .contacto-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 3px;
+  }
+
+  .btn-whatsapp {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #25D366;
+    color: var(--branco);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-top: 32px;
+    transition: opacity 0.2s;
+  }
+  .btn-whatsapp:hover { opacity: 0.9; }
+
+  /* ───── RODAPÉ ───── */
+  footer {
+    background: #0F1826;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  footer p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
+    line-height: 1.6;
+  }
+  footer strong { color: var(--dourado); }
+
+  /* ───── REVEAL ANIMATION ───── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .reveal.visivel { opacity: 1; transform: translateY(0); }
+
+  /* ───── RESPONSIVO ───── */
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    section { padding: 56px 16px; }
+    .form-wrapper { padding: 24px 16px; }
+    .form-row { grid-template-columns: 1fr; }
+    .vagas-numero { font-size: 3rem; }
+    .modal-box { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ───── NAV ───── -->
+<nav>
+  <div class="nav-logo"><span>C</span>ode<span>C</span>reativity</div>
+  <ul class="nav-links">
+    <li><a href="#cursos">Cursos</a></li>
+    <li><a href="#pagamento">Pagamento</a></li>
+    <li><a href="#formulario">Inscrição</a></li>
+    <li><a href="#contactos">Contactos</a></li>
+    <li><a href="#formulario" class="nav-cta">Inscrever-me</a></li>
+  </ul>
+</nav>
+
+<!-- ───── HERO ───── -->
+<section id="hero">
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    Inscrições Abertas · 2026
+  </div>
+
+  <h1 class="hero-titulo">
+    Preparatório<br>de <span>Ingresso</span><br>à Universidade
+  </h1>
+
+  <p class="hero-edicao">6.ª Edição · Sumbe, Cuanza-Sul</p>
+
+  <p class="hero-desc">
+    A preparação mais rigorosa de Sumbe para garantires a tua entrada na universidade.
+    Inscreve-te, efectua o pagamento e recebe o teu comprovativo.
+  </p>
+
+  <div class="vagas-box reveal">
+    <div class="vagas-label">Vagas disponíveis</div>
+    <div class="vagas-numero" id="contadorVagas">47</div>
+    <div class="vagas-subtexto">As vagas são limitadas e preenchidas por ordem de inscrição</div>
+  </div>
+
+  <div class="hero-btns">
+    <a href="#formulario" class="btn-primario">Garantir a minha vaga →</a>
+    <a href="#cursos" class="btn-secundario">Ver cursos disponíveis</a>
+  </div>
+</section>
+
+<!-- ───── CURSOS ───── -->
+<section id="cursos">
+  <div class="container-lg">
+    <div class="reveal">
+      <div class="secao-eyebrow">Áreas de preparação</div>
+      <h2 class="secao-titulo">Cursos disponíveis</h2>
+      <p class="secao-subtitulo">
+        Preparamos para todas as principais universidades e institutos públicos e privados de Angola.
+        Cada área tem professores especializados e material próprio.
+      </p>
+    </div>
+
+    <div class="cursos-grid reveal">
+      <div class="curso-card">
+        <div class="curso-card-header">
+          <div class="curso-inst">ISCED — Sumbe</div>
+          <div class="curso-preco">6.000 Kz/mês</div>
+        </div>
+        <ul class="curso-lista">
+          <li>Ensino da História</li>
+          <li>Ensino de Infância</li>
+          <li>Ensino Primário</li>
+          <li>Ensino do Português</li>
+          <li>Ensino da Matemática</li>
+          <li>Ensino da Química</li>
+          <li>Ensino da Língua Inglesa</li>
+        </ul>
+      </div>
+
+      <div class="curso-card">
+        <div class="curso-card-header">
+          <div class="curso-inst">ISP — Sumbe</div>
+          <div class="curso-preco">6.000 Kz/mês</div>
+        </div>
+        <ul class="curso-lista">
+          <li>Agronomia</li>
+          <li>Zootecnia</li>
+          <li>Contabilidade e Gestão</li>
+          <li>Gestão de Empresas</li>
+        </ul>
+      </div>
+
+      <div class="curso-card">
+        <div class="curso-card-header">
+          <div class="curso-inst">ISU-WACO — Sumbe</div>
+          <div class="curso-preco">6.000 Kz/mês</div>
+        </div>
+        <ul class="curso-lista">
+          <li>Enfermagem Geral</li>
+          <li>Análises Clínicas</li>
+          <li>Direito</li>
+          <li>Economia</li>
+          <li>Contabilidade e Auditoria</li>
+          <li>Gestão de Empresas</li>
+        </ul>
+      </div>
+
+      <div class="curso-card">
+        <div class="curso-card-header">
+          <div class="curso-inst">Engenharia</div>
+          <div class="curso-preco">10.000 Kz/mês</div>
+        </div>
+        <ul class="curso-lista">
+          <li>Mecânica</li>
+          <li>Electrónica e Telecomunicação</li>
+          <li>Ciências da Computação</li>
+          <li>Informática</li>
+          <li>Construção Civil</li>
+          <li>Electricidade</li>
+          <li>Hidráulica</li>
+        </ul>
+      </div>
+
+      <div class="curso-card">
+        <div class="curso-card-header">
+          <div class="curso-inst">Fac. Benguela / Huambo / Luanda</div>
+          <div class="curso-preco">10.000 Kz/mês</div>
+        </div>
+        <ul class="curso-lista">
+          <li>Medicina</li>
+          <li>Direito</li>
+          <li>Economia</li>
+          <li>Contabilidade e Auditoria</li>
+          <li>Engenharia Civil</li>
+          <li>Gestão de Empresas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── PAGAMENTO ───── -->
+<section id="pagamento">
+  <div class="container-lg">
+    <div class="reveal">
+      <div class="secao-eyebrow">Antes de te inscrever</div>
+      <h2 class="secao-titulo">Formas de pagamento</h2>
+      <p class="secao-subtitulo">
+        Efectua o pagamento da taxa de inscrição de <strong>2.000 Kz</strong> por uma das formas abaixo,
+        guarda o comprovativo e faz o upload no formulário de inscrição.
+      </p>
+    </div>
+
+    <div class="pagamento-grid reveal">
+      <div class="pag-card">
+        <div class="pag-icon">🏦</div>
+        <div class="pag-titulo">Transferência Bancária</div>
+        <div class="pag-desc">
+          Transfere directamente da tua conta bancária ou através do internet banking do teu banco.
+          Usa o IBAN abaixo como destino.
+        </div>
+        <div class="pag-numero">0006.0000.5474.8408.3013.8</div>
+        <div class="pag-valor">Valor: <strong>2.000 Kz</strong> · Referência: o teu nome completo</div>
+      </div>
+
+      <div class="pag-card">
+        <div class="pag-icon">📱</div>
+        <div class="pag-titulo">Multicaixa Express</div>
+        <div class="pag-desc">
+          Abre o teu Multicaixa Express, selecciona "Transferir" e usa o número abaixo.
+          Envia uma captura de ecrã como comprovativo.
+        </div>
+        <div class="pag-numero">930 782 841</div>
+        <div class="pag-valor">Valor: <strong>2.000 Kz</strong> · Referência: o teu nome completo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── FORMULÁRIO ───── -->
+<section id="formulario">
+  <div class="container">
+    <div class="reveal">
+      <div class="secao-eyebrow">Pré-inscrição</div>
+      <h2 class="secao-titulo">Preenche o teu formulário</h2>
+      <p class="secao-subtitulo">
+        Depois de efectuares o pagamento, preenche os dados abaixo e faz o upload do comprovativo.
+        Vais receber um PDF de inscrição para apresentares na direcção e confirmar a tua vaga.
+      </p>
+    </div>
+
+    <div class="form-wrapper reveal">
+      <form id="formInscricao" novalidate>
+
+        <!-- DADOS PESSOAIS -->
+        <div class="form-separador">Dados Pessoais</div>
+
+        <div class="form-grupo">
+          <label for="nomeCompleto">Nome Completo <span class="obrigatorio">*</span></label>
+          <input type="text" id="nomeCompleto" placeholder="Ex: Ana Maria Silva Santos">
+          <div class="form-erro-msg" id="erro-nomeCompleto">Por favor, introduz o teu nome completo.</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-grupo">
+            <label for="telefone">Número de Telefone <span class="obrigatorio">*</span></label>
+            <input type="tel" id="telefone" placeholder="9XX XXX XXX" maxlength="9">
+            <div class="form-erro-msg" id="erro-telefone">Número inválido. Deve ter 9 dígitos e começar por 9.</div>
+          </div>
+          <div class="form-grupo">
+            <label for="sexo">Sexo <span class="obrigatorio">*</span></label>
+            <select id="sexo">
+              <option value="">Seleccionar...</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+            </select>
+            <div class="form-erro-msg" id="erro-sexo">Selecciona o teu sexo.</div>
+          </div>
+        </div>
+
+        <!-- ÁREA E CURSO -->
+        <div class="form-separador">Área e Curso</div>
+
+        <div class="form-grupo">
+          <label for="instituicao">Instituição Universitária Pretendida <span class="obrigatorio">*</span></label>
+          <select id="instituicao">
+            <option value="">Seleccionar instituição...</option>
+            <option value="ISCED-SUMBE">ISCED — Sumbe</option>
+            <option value="ISP-SUMBE">ISP — Sumbe</option>
+            <option value="ISU-WACO">ISU-WACO — Sumbe</option>
+            <option value="ENGENHARIA">Engenharia</option>
+            <option value="FAC-BHL">Fac. Benguela / Huambo / Luanda</option>
+          </select>
+          <div class="form-erro-msg" id="erro-instituicao">Selecciona uma instituição.</div>
+        </div>
+
+        <div class="form-grupo">
+          <label for="curso">Curso Pretendido <span class="obrigatorio">*</span></label>
+          <select id="curso" disabled>
+            <option value="">Selecciona primeiro a instituição...</option>
+          </select>
+          <div class="form-erro-msg" id="erro-curso">Selecciona um curso.</div>
+        </div>
+
+        <!-- COMPROVATIVO -->
+        <div class="form-separador">Comprovativo de Pagamento</div>
+
+        <div class="form-grupo">
+          <label>Comprovativo do Pagamento da Inscrição <span class="obrigatorio">*</span></label>
+          <div class="upload-area" id="uploadArea">
+            <input type="file" id="ficheiroPagamento" accept="image/*,.pdf">
+            <div class="upload-icone">📎</div>
+            <div class="upload-texto">
+              <strong>Clica aqui para seleccionar o ficheiro</strong><br>
+              Aceita imagem (foto do recibo) ou PDF · Máx. 10MB
+            </div>
+          </div>
+          <div class="upload-preview" id="uploadPreview">
+            <span style="font-size:1.4rem">✅</span>
+            <div>
+              <div class="upload-preview-nome" id="uploadNome"></div>
+              <div class="upload-preview-tamanho" id="uploadTamanho"></div>
+            </div>
+          </div>
+          <div class="form-erro-msg" id="erro-ficheiro">Por favor, faz o upload do comprovativo de pagamento.</div>
+        </div>
+
+        <button type="submit" class="btn-primario btn-submit" id="btnSubmit">
+          <div class="spinner" id="spinnerBtn"></div>
+          <span id="btnTexto">Inscrever-me e Gerar Comprovativo</span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ───── CONTACTOS ───── -->
+<section id="contactos">
+  <div class="container-lg">
+    <div class="reveal">
+      <div class="secao-eyebrow" style="color: rgba(245,166,35,0.7)">Estamos aqui para ti</div>
+      <h2 class="secao-titulo">Contactos e localização</h2>
+      <p class="secao-subtitulo">Temos dois complexos em Sumbe. Após a inscrição, apresenta o teu comprovativo PDF em qualquer um deles.</p>
+    </div>
+
+    <div class="contactos-grid reveal">
+      <div class="contacto-item">
+        <div class="contacto-label">Local 1</div>
+        <div class="contacto-valor">Complexo É-15</div>
+        <div class="contacto-sub">Sumbe, Cuanza-Sul</div>
+      </div>
+      <div class="contacto-item">
+        <div class="contacto-label">Local 2</div>
+        <div class="contacto-valor">Complexo 14 de Abril</div>
+        <div class="contacto-sub">Sumbe, Cuanza-Sul</div>
+      </div>
+      <div class="contacto-item">
+        <div class="contacto-label">Telefone</div>
+        <div class="contacto-valor">930 782 841</div>
+        <div class="contacto-sub">Chamadas e WhatsApp</div>
+      </div>
+      <div class="contacto-item">
+        <div class="contacto-label">WhatsApp</div>
+        <div class="contacto-valor">941 808 750</div>
+        <div class="contacto-sub">Mensagens e dúvidas</div>
+      </div>
+    </div>
+
+    <a href="https://wa.me/244941808750" target="_blank" class="btn-whatsapp">
+      💬 Falar no WhatsApp
+    </a>
+  </div>
+</section>
+
+<!-- ───── RODAPÉ ───── -->
+<footer>
+  <p>© 2025 <strong>CodeCreativity</strong> — Sumbe, Cuanza-Sul, Angola<br>
+  A melhor e mais rigorosa preparação tu encontras aqui na CodeCreativity!</p>
+</footer>
+
+<!-- ───── MODAL ───── -->
+<div class="modal-overlay" id="modalSucesso">
+  <div class="modal-box">
+    <div class="modal-check">✓</div>
+    <div class="modal-titulo">Inscrição efectuada!</div>
+    <div style="font-size:0.85rem;color:var(--texto-suave);margin-bottom:4px;">O teu número de inscrição é:</div>
+    <div class="modal-numero" id="modalNumero">CC-2025-0000</div>
+    <div class="modal-desc">
+      O teu comprovativo PDF foi gerado e descarregado automaticamente.
+      Agora envia-o pelo WhatsApp juntamente com a foto do comprovativo de pagamento
+      para confirmares a tua vaga na direcção da CodeCreativity.
+    </div>
+    <div class="modal-btns">
+      <a id="btnWhatsAppModal" href="#" target="_blank" class="modal-btn-pdf" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;">
+        💬 Enviar comprovativo pelo WhatsApp
+      </a>
+      <button class="modal-btn-pdf" id="btnBaixarNovamente" style="background:var(--azul-medio);">⬇ Descarregar PDF novamente</button>
+      <button class="modal-btn-fechar" id="btnFecharModal">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ───── JAVASCRIPT ───── -->
+<script>
+// ═══ DADOS DOS CURSOS ═══
+const CURSOS = {
+  'ISCED-SUMBE': ['Ensino da História','Ensino de Infância','Ensino Primário','Ensino do Português','Ensino da Matemática','Ensino da Química','Ensino da Língua Inglesa'],
+  'ISP-SUMBE': ['Agronomia','Zootecnia','Contabilidade e Gestão','Gestão de Empresas'],
+  'ISU-WACO': ['Enfermagem Geral','Análises Clínicas','Direito','Economia','Contabilidade e Auditoria','Gestão de Empresas'],
+  'ENGENHARIA': ['Mecânica','Electrónica e Telecomunicação','Ciências da Computação','Informática','Construção Civil','Electricidade','Hidráulica'],
+  'FAC-BHL': ['Medicina','Direito','Economia','Contabilidade e Auditoria','Engenharia Civil','Gestão de Empresas']
+};
+
+const INST_NOMES = {
+  'ISCED-SUMBE': 'ISCED — Sumbe',
+  'ISP-SUMBE': 'ISP — Sumbe',
+  'ISU-WACO': 'ISU-WACO — Sumbe',
+  'ENGENHARIA': 'Engenharia',
+  'FAC-BHL': 'Fac. Benguela / Huambo / Luanda'
+};
+
+// ═══ EMAILJS — CONFIGURAÇÃO ═══
+emailjs.init('QmuZp4kdAVg9NSwKq');
+const EMAILJS_SERVICE  = 'service_ppgr42h';
+const EMAILJS_TEMPLATE = 'template_8fgeg7k';
+
+// ═══ ESTADO GLOBAL ═══
+let dadosPDF = null;
+let numeroInscricao = '';
+
+// ═══ CONTADOR DE VAGAS (animação inicial) ═══
+function animarContador() {
+  const el = document.getElementById('contadorVagas');
+  let atual = 80;
+  const alvo = 47;
+  const duracao = 1800;
+  const passo = duracao / (atual - alvo);
+  const timer = setInterval(() => {
+    atual--;
+    el.textContent = atual;
+    if (atual <= alvo) clearInterval(timer);
+  }, passo);
+}
+setTimeout(animarContador, 600);
+
+// ═══ SELECT DINÂMICO DE CURSOS ═══
+document.getElementById('instituicao').addEventListener('change', function() {
+  const cursosSelect = document.getElementById('curso');
+  const inst = this.value;
+  cursosSelect.innerHTML = '<option value="">Seleccionar curso...</option>';
+  if (inst && CURSOS[inst]) {
+    CURSOS[inst].forEach(c => {
+      const op = document.createElement('option');
+      op.value = c; op.textContent = c;
+      cursosSelect.appendChild(op);
+    });
+    cursosSelect.disabled = false;
+  } else {
+    cursosSelect.disabled = true;
+    cursosSelect.innerHTML = '<option value="">Selecciona primeiro a instituição...</option>';
+  }
+});
+
+// ═══ UPLOAD DE FICHEIRO ═══
+document.getElementById('ficheiroPagamento').addEventListener('change', function() {
+  const ficheiro = this.files[0];
+  const area = document.getElementById('uploadArea');
+  const preview = document.getElementById('uploadPreview');
+
+  if (ficheiro) {
+    if (ficheiro.size > 10 * 1024 * 1024) {
+      alert('O ficheiro é demasiado grande. O limite é 10MB.');
+      this.value = '';
+      return;
+    }
+    area.classList.add('tem-ficheiro');
+    preview.classList.add('visivel');
+    document.getElementById('uploadNome').textContent = ficheiro.name;
+    document.getElementById('uploadTamanho').textContent =
+      ficheiro.size > 1024 * 1024
+        ? (ficheiro.size / (1024*1024)).toFixed(1) + ' MB'
+        : Math.round(ficheiro.size / 1024) + ' KB';
+    esconderErro('ficheiro');
+  } else {
+    area.classList.remove('tem-ficheiro');
+    preview.classList.remove('visivel');
+  }
+});
+
+// ═══ VALIDAÇÃO ═══
+function mostrarErro(id, msg) {
+  const campo = document.getElementById(id);
+  if (campo) campo.classList.add('erro');
+  const erroEl = document.getElementById('erro-' + id);
+  if (erroEl) {
+    if (msg) erroEl.textContent = msg;
+    erroEl.classList.add('visivel');
+  }
+  return false;
+}
+
+function esconderErro(id) {
+  const campo = document.getElementById(id);
+  if (campo) campo.classList.remove('erro');
+  const erroEl = document.getElementById('erro-' + id);
+  if (erroEl) erroEl.classList.remove('visivel');
+}
+
+function validarFormulario() {
+  let valido = true;
+
+  const nome = document.getElementById('nomeCompleto').value.trim();
+  if (!nome || nome.split(' ').length < 2) {
+    mostrarErro('nomeCompleto', 'Introduz o teu nome completo (nome e apelido).');
+    valido = false;
+  } else esconderErro('nomeCompleto');
+
+  const tel = document.getElementById('telefone').value.trim().replace(/\s/g,'');
+  if (!/^9\d{8}$/.test(tel)) {
+    mostrarErro('telefone');
+    valido = false;
+  } else esconderErro('telefone');
+
+  const sexo = document.getElementById('sexo').value;
+  if (!sexo) {
+    mostrarErro('sexo');
+    valido = false;
+  } else esconderErro('sexo');
+
+  const inst = document.getElementById('instituicao').value;
+  if (!inst) {
+    mostrarErro('instituicao');
+    valido = false;
+  } else esconderErro('instituicao');
+
+  const curso = document.getElementById('curso').value;
+  if (!curso) {
+    mostrarErro('curso');
+    valido = false;
+  } else esconderErro('curso');
+
+  const ficheiro = document.getElementById('ficheiroPagamento').files[0];
+  if (!ficheiro) {
+    mostrarErro('ficheiro', 'Faz o upload do comprovativo de pagamento antes de continuar.');
+    valido = false;
+  } else esconderErro('ficheiro');
+
+  return valido;
+}
+
+// ═══ GERAÇÃO DO NÚMERO DE INSCRIÇÃO ═══
+function gerarNumero() {
+  const rand = String(Math.floor(1000 + Math.random() * 9000));
+  return 'CC-2025-' + rand;
+}
+
+// ═══ DATA/HORA FORMATADA ═══
+function dataHoraAgora() {
+  const agora = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return `${pad(agora.getDate())}/${pad(agora.getMonth()+1)}/${agora.getFullYear()} ${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
+}
+
+// ═══ GERAÇÃO DO PDF ═══
+function gerarPDF(dados) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, azul = [27,42,74], dourado = [245,166,35], branco = [255,255,255], cinzento = [244,245,247];
+
+  // Cabeçalho
+  doc.setFillColor(...azul);
+  doc.rect(0, 0, W, 42, 'F');
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(22);
+  doc.setTextColor(...dourado);
+  doc.text('CodeCreativity', W/2, 18, {align:'center'});
+
+  doc.setFontSize(10);
+  doc.setTextColor(...branco);
+  doc.text('COMPROVATIVO DE PRÉ-INSCRIÇÃO', W/2, 26, {align:'center'});
+  doc.text('Curso Preparatório Geral de Ingresso à Universidade — 6.ª Edição', W/2, 33, {align:'center'});
+
+  // Linha dourada
+  doc.setDrawColor(...dourado);
+  doc.setLineWidth(0.8);
+  doc.line(14, 42, W-14, 42);
+
+  // Número de inscrição em destaque
+  doc.setFillColor(...azul);
+  doc.roundedRect(14, 48, W-28, 22, 3, 3, 'F');
+  doc.setFontSize(10); doc.setTextColor(...dourado);
+  doc.text('NÚMERO DE INSCRIÇÃO', W/2, 56, {align:'center'});
+  doc.setFontSize(18); doc.setFont('helvetica','bold');
+  doc.text(dados.numero, W/2, 65, {align:'center'});
+
+  // Data
+  doc.setFontSize(8.5); doc.setTextColor(90,96,112); doc.setFont('helvetica','normal');
+  doc.text('Data de submissão: ' + dados.dataHora, W/2, 76, {align:'center'});
+
+  // Linha
+  doc.setDrawColor(226,228,233); doc.setLineWidth(0.3);
+  doc.line(14, 80, W-14, 80);
+
+  // Função para secção
+  let y = 88;
+  function secao(titulo) {
+    doc.setFillColor(...cinzento);
+    doc.rect(14, y, W-28, 8, 'F');
+    doc.setFontSize(8); doc.setFont('helvetica','bold');
+    doc.setTextColor(...azul);
+    doc.text(titulo.toUpperCase(), 18, y+5.5);
+    y += 12;
+  }
+
+  function linha(campo, valor) {
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(90,96,112);
+    doc.text(campo + ':', 18, y);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(...azul);
+    doc.text(String(valor), 80, y);
+    y += 7.5;
+  }
+
+  secao('Dados do Candidato');
+  linha('Nome Completo', dados.nome);
+  linha('Telefone / WhatsApp', dados.telefone);
+  linha('Sexo', dados.sexo);
+
+  y += 4;
+  secao('Inscrição');
+  linha('Instituição Pretendida', dados.instituicaoNome);
+  linha('Curso Pretendido', dados.curso);
+
+  // Aviso importante
+  y += 8;
+  doc.setFillColor(255, 249, 230);
+  doc.setDrawColor(...dourado);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(14, y, W-28, 32, 3, 3, 'FD');
+
+  doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.setTextColor(180,120,10);
+  doc.text('⚠  IMPORTANTE — Lê com atenção', 20, y+8);
+
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(100,70,5);
+  const aviso = [
+    'Este documento é o teu comprovativo de pré-inscrição. Apresenta-o na direcção da CodeCreativity',
+    '(Complexo Escolar É-15 ou Complexo Escolar 14 de Abril) para confirmar a tua vaga.',
+    'Envia o comprovativo de pagamento via WhatsApp antes de te apresentares na direcção.'
+  ];
+  aviso.forEach((linha_txt, i) => {
+    doc.text(linha_txt, 20, y + 16 + (i * 5.5));
+  });
+
+  y += 40;
+
+  // Contactos no rodapé do PDF
+  doc.setFillColor(...azul);
+  doc.rect(14, y, W-28, 22, 'F');
+  doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.setTextColor(...dourado);
+  doc.text('CONTACTOS', W/2, y+7, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setTextColor(...branco);
+  doc.text('Telefone: 930 782 841  |  WhatsApp: 941 808 750', W/2, y+13, {align:'center'});
+  doc.text('Sumbe, Cuanza-Sul, Angola', W/2, y+19, {align:'center'});
+
+  // Rodapé da página
+  doc.setFontSize(7.5); doc.setTextColor(160,165,175); doc.setFont('helvetica','normal');
+  doc.text('© 2025 CodeCreativity · Documento gerado electronicamente em ' + dados.dataHora, W/2, 290, {align:'center'});
+
+  // Linha dourada rodapé
+  doc.setDrawColor(...dourado); doc.setLineWidth(0.6);
+  doc.line(14, 285, W-14, 285);
+
+  const nomeArquivo = 'Comprovativo_CodeCreativity_' + dados.numero + '.pdf';
+  doc.save(nomeArquivo);
+  return doc;
+}
+
+// ═══ SUBMISSÃO DO FORMULÁRIO ═══
+document.getElementById('formInscricao').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  if (!validarFormulario()) {
+    const primeiroErro = document.querySelector('.form-erro-msg.visivel');
+    if (primeiroErro) primeiroErro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmit');
+  const spinner = document.getElementById('spinnerBtn');
+  const btnTexto = document.getElementById('btnTexto');
+
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  btnTexto.textContent = 'A enviar inscrição...';
+
+  const instVal = document.getElementById('instituicao').value;
+  numeroInscricao = gerarNumero();
+  const dataHora = dataHoraAgora();
+
+  dadosPDF = {
+    numero: numeroInscricao,
+    dataHora: dataHora,
+    nome: document.getElementById('nomeCompleto').value.trim(),
+    telefone: document.getElementById('telefone').value.trim(),
+    sexo: document.getElementById('sexo').value,
+    instituicaoNome: INST_NOMES[instVal] || instVal,
+    curso: document.getElementById('curso').value,
+  };
+
+  // ── Enviar email via EmailJS ──
+  const templateParams = {
+    numero_inscricao: dadosPDF.numero,
+    data_hora:        dadosPDF.dataHora,
+    nome:             dadosPDF.nome,
+    telefone:         dadosPDF.telefone,
+    sexo:             dadosPDF.sexo,
+    instituicao:      dadosPDF.instituicaoNome,
+    curso:            dadosPDF.curso,
+  };
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, templateParams);
+  } catch (err) {
+    console.warn('EmailJS falhou:', err);
+    // O PDF é gerado na mesma mesmo que o email falhe
+  }
+
+  // ── Gerar PDF ──
+  gerarPDF(dadosPDF);
+
+  // ── Actualizar contador de vagas ──
+  const contEl = document.getElementById('contadorVagas');
+  const atual = parseInt(contEl.textContent);
+  if (atual > 1) contEl.textContent = atual - 1;
+
+  // ── Mostrar modal ──
+  document.getElementById('modalNumero').textContent = numeroInscricao;
+
+  // Montar link WhatsApp com mensagem pré-escrita
+  const msgWA = encodeURIComponent(
+    `Olá CodeCreativity! Acabei de me inscrever no preparatório.\n\n` +
+    `📋 Número de inscrição: ${dadosPDF.numero}\n` +
+    `👤 Nome: ${dadosPDF.nome}\n` +
+    `📱 Telefone: ${dadosPDF.telefone}\n` +
+    `🎓 Curso: ${dadosPDF.curso} — ${dadosPDF.instituicaoNome}\n\n` +
+    `Envio em anexo o comprovativo de inscrição e o comprovativo de pagamento.`
+  );
+  document.getElementById('btnWhatsAppModal').href =
+    `https://wa.me/244941808750?text=${msgWA}`;
+
+  document.getElementById('modalSucesso').classList.add('visivel');
+
+  // ── Limpar formulário ──
+  document.getElementById('nomeCompleto').value = '';
+  document.getElementById('telefone').value = '';
+  document.getElementById('sexo').value = '';
+  document.getElementById('instituicao').value = '';
+  const cursosSelect = document.getElementById('curso');
+  cursosSelect.innerHTML = '<option value="">Selecciona primeiro a instituição...</option>';
+  cursosSelect.disabled = true;
+  document.getElementById('ficheiroPagamento').value = '';
+  document.getElementById('uploadArea').classList.remove('tem-ficheiro');
+  document.getElementById('uploadPreview').classList.remove('visivel');
+  document.getElementById('uploadNome').textContent = '';
+  document.getElementById('uploadTamanho').textContent = '';
+
+  btn.disabled = false;
+  spinner.style.display = 'none';
+  btnTexto.textContent = 'Inscrever-me e Gerar Comprovativo';
+});
+
+// ═══ MODAL BOTÕES ═══
+document.getElementById('btnBaixarNovamente').addEventListener('click', function() {
+  if (dadosPDF) gerarPDF(dadosPDF);
+});
+
+document.getElementById('btnFecharModal').addEventListener('click', function() {
+  document.getElementById('modalSucesso').classList.remove('visivel');
+});
+
+document.getElementById('modalSucesso').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('visivel');
+});
+
+// ═══ REVEAL ON SCROLL ═══
+const observador = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visivel');
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observador.observe(el));
+</script>
+</body>
+</html>
